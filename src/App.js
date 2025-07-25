@@ -1,49 +1,41 @@
 import React, { useState, useEffect } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
+import Dice from './components/Dice';
 
-const Dice = () => {
-  // 1️⃣ État local pour la valeur du dé (entre 1 et 6)
+const App = () => {
   const [diceValue, setDiceValue] = useState(1);
   const [history, setHistory] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // 2️⃣ Tableau d'émojis représentant les faces du dé
-  const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-
-
-  // Charger depuis localStorage une seule fois
+  // Charger historique au démarrage
   useEffect(() => {
-    const savedHistory = localStorage.getItem('diceHistory');
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
+    const saved = localStorage.getItem('diceHistory');
+    if (saved) {
+      setHistory(JSON.parse(saved));
     }
-    setIsLoaded(true); // ✅ Indique que le chargement est fait
+    setIsLoaded(true);
   }, []);
 
-  // Sauvegarder uniquement après le chargement initial
+  // Sauvegarde auto
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem('diceHistory', JSON.stringify(history));
     }
   }, [history, isLoaded]);
 
-
   const rollDice = () => {
-    const randomValue = Math.floor(Math.random() * 6) + 1;
-    setDiceValue(randomValue);
-    setHistory(prev => [...prev, randomValue]);
+    const random = Math.floor(Math.random() * 6) + 1;
+    setDiceValue(random);
+    setHistory(prev => [...prev, random]);
   };
 
-
   return (
-    <div style={{ fontSize: '20px', textAlign: 'center', marginTop: '50px' }}>
-      <div style={{ fontSize: '100px' }}>
-        {/* 3️⃣ Affiche l'émoji correspondant à la valeur actuelle */}
-        {diceFaces[diceValue - 1]}
-      </div>
+    <div style={{ textAlign: 'center' }}>
       <button
         onClick={rollDice}
         style={{
-          marginTop: '20px',
+          margin: '20px',
           padding: '10px 20px',
           fontSize: '16px',
           cursor: 'pointer',
@@ -53,18 +45,26 @@ const Dice = () => {
         Lancer le dé
       </button>
 
-      <h2 style={{ marginTop: '40px' }}>Historique des lancers :</h2>
+      {/* Scène 3D */}
+      <div style={{ width: '400px', height: '400px', margin: 'auto' }}>
+        <Canvas camera={{ position: [5, 5, 5] }}>
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[0, 0, 5]} />
+          <Dice value={diceValue} />
+          <OrbitControls />
+        </Canvas>
+      </div>
+
+      <h2>Historique des lancers :</h2>
       <ul style={{ listStyleType: 'none', padding: 0 }}>
-        {history.map((value, index) => (
-          <li key={index} style={{ fontSize: '24px' }}>
-            Lancer {index + 1}: {diceFaces[value - 1]}
+        {history.map((val, i) => (
+          <li key={i} style={{ fontSize: '20px' }}>
+            Lancer {i + 1} : {val}
           </li>
         ))}
       </ul>
-
-
     </div>
   );
 };
 
-export default Dice;
+export default App;
