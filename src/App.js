@@ -8,14 +8,14 @@ const App = () => {
   const [history, setHistory] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Charger historique au démarrage
-  useEffect(() => {
-    const saved = localStorage.getItem('diceHistory');
-    if (saved) {
-      setHistory(JSON.parse(saved));
-    }
-    setIsLoaded(true);
-  }, []);
+  // // Charger historique au démarrage
+  // useEffect(() => {
+  //   const saved = localStorage.getItem('diceHistory');
+  //   if (saved) {
+  //     setHistory(JSON.parse(saved));
+  //   }
+  //   setIsLoaded(true);
+  // }, []);
 
   // Sauvegarde auto
   useEffect(() => {
